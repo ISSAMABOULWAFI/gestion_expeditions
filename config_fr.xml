@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+	<name>gestion_expeditions</name>
+	<displayName><![CDATA[Gestion des exp&eacute;ditions]]></displayName>
+	<version><![CDATA[1.0.1]]></version>
+	<description><![CDATA[Module pour la gestion des exp&eacute;ditions Amana]]></description>
+	<author><![CDATA[ERRAMY NOUREDDINE]]></author>
+	<tab><![CDATA[administration]]></tab>
+	<is_configurable>1</is_configurable>
+	<need_instance>1</need_instance>
+	<limited_countries></limited_countries>
+</module>
