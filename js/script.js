@@ -1,8 +1,4 @@
-var results = [], // contains your rows
-    page = 1, // current page
-    pagesize = 5; // items per page
-	
-	
+var current_page=1;
 $(document).ready(function(){
 	$("#confirm").submit(function(){
 		var c = confirm("Click OK to continue?");
@@ -78,29 +74,26 @@ $(document).ready(function(){
 	   }
 	   return false;
     });
-	//alert('ok');	
+	//alert('ok');
+
+	
 	$('.jqte-test').jqte();
 	$(".status").click(function()
 	{
 		jqteStatus = jqteStatus ? false : true;
 		$('.jqte-test').jqte({'status': jqteStatus});
 	});
-	
+/*	
 	$('.empty').click(function(){
 		
 		alert("Aucune étiquette trouvée");
 	});
+	*/
 	
-	$("#paging").on("click", "a", function() {
-		page = $(this).text();
-		loadPage();
-	});
-	init();
-	
+	/*
 	loadPage();
     generatePagingLinks();
-	
-	
+	*/
 	
 });
 
@@ -108,15 +101,38 @@ $(document).ready(function(){
 // function for generating paging links
 
 function init() {
-	$("#tbody tr").each(function(i, v){
-        results[i]=$(this).html();
+	//console.log(contr_link);
+	var count_pages=Math.ceil((countexp)/parseFloat(item_per_page));
+	if(count_pages>0){
+		$("#paging").children("a").remove(); // Remove existing paging links
+
+		// generate new paging links
+		for (var i = 0; i < count_pages; i++)
+			$("<a>").attr("href", "#").addClass("btn btn-default").text(i + 1).appendTo("#paging");
+	}
+	$("#paging").on("click", "a", function() {
+		//console.log('PAGING CLICKED'+);
+		var page=(parseInt($(this).text()));
+		if(page != current_page){
+			current_page=page;
+			_offset = ((parseInt($(this).text()))*item_per_page)-item_per_page;
+			//console.log('offset: '+_offset+" , limit: "+item_per_page);
+			getExpeditions(_offset);
+			
+		}
 	});
-	$("#tbody").children("tr").remove();
+	
+	getExpeditions();
+	/*$("#tbody tr").each(function(i, v){
+        results[i]=$(this).html();
+	});*/
+	//$("#tbody").children("tr").remove();
 	//console.log(results.length);
 	//$.each(results, function(index, val) {
     //console.log(results[0]);
 	//});
 }
+/*
 function generatePagingLinks() {
     var links = Math.ceil(results.length / pagesize); // calculate number of links
 
@@ -148,4 +164,56 @@ function loadPage() {
 
     //$(row).appendTo('#tbody');
 	
+}
+*/
+
+function getExpeditions(offset=0){
+	
+	$.ajax({
+		url: contr_link+"&action=getexports&offset="+offset+"&limit="+item_per_page,
+		beforeSend: function( xhr ) {
+			$(loadingdiv).css({"display":"flex"});
+			$('table#main1').css({'display':'none'});
+		}
+	})
+	.done(function( data ) {
+		$(loadingdiv).css({"display":"none"});
+		//console.log(data+"\n\r"+item_per_page+"\n\r"+countexp+"\n\r"+count_pages);
+		//console.log(data);
+		var el="";
+		
+		$('table#main1 tbody#tbody').children("tr").remove();
+		$('table#main1 tbody#tbody').append(data);
+		$('table#main1').css({'display':'display'});
+		
+		
+		if($('table#main1 tbody#tbody').children("tr").length>0){
+			$('table#main1').css({'display':'display'});
+			$('div#noexport').css({'display':'none'});
+		}else{
+			$('table#main1').css({'display':'none'});
+			$('div#noexport').css({'display':'flex'});
+		}
+		
+		console.log(data);
+	})
+	.fail(function(xhr, textStatus, errorThrown) {
+		alert('Erreur de chargement des données! \nActualiser la page et réessayer.');
+	}).always(function(){
+		//console.log("EndAjax");
+		refreshBtn(current_page);
+	});
+	
+}
+
+function refreshBtn(page_num=1){
+	$("#paging").children("a").each(function () {
+		//console.log($(this).text()); // "this" is the current element in the loop
+		if($(this).text()==current_page){
+			$(this).addClass('btn-success');
+		}else{
+			$(this).removeClass('btn-success');
+		}
+		
+	});
 }

@@ -116,8 +116,10 @@ class AdminGenerationDocsController extends AdminController{
 	}
 	
     public function xls($id_exp,$zone_id,$save=false) {
+			
 		$zone=Magasin::getZoneName($zone_id);
 		$export=Export::getExport($id_exp);
+		
 		//print_r($orders);
 		//die();
 		$myorders=Export::getOrdersByZone($id_exp,$this->context->language->id,$zone_id);
@@ -203,7 +205,14 @@ class AdminGenerationDocsController extends AdminController{
 					}	
 					//->setCellValue('J'.$loop, $row['id_cart']);					
 					//get_relay_point
-					$relay_point=OrderModel::get_relay_point($row['id_cart']);
+					
+					try{
+						$relay_point=OrderModel::get_relay_point($row['id_cart']);
+					}catch(Exception $e){
+					}
+					if(!$relay_point){
+						$relay_point=array();
+					}
 					if(count($relay_point)>0){
 						$txt1=$relay_point[0]['relay_point'];
 						
@@ -408,7 +417,11 @@ class AdminGenerationDocsController extends AdminController{
 		
 		// create new PDF document
 		$pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-
+		
+		$expdt=date("d/m/Y H:i:s", strtotime($export[0]['date_exp']));
+		
+		$pdf->setExpDate($expdt);
+		
 		// set document information
 		$pdf->SetCreator(PDF_CREATOR);
 		$pdf->SetAuthor(PDF_AUTHOR);
@@ -745,6 +758,14 @@ class AdminGenerationDocsController extends AdminController{
 }
 class MYPDF extends TCPDF {
 
+	var $expDate="";
+	
+	
+	
+	public function setExpDate($dt = ""){
+		$this->expDate = $dt;
+	}
+	
 	//Page header
 	public function Header() {
 		// Logo
@@ -771,8 +792,8 @@ class MYPDF extends TCPDF {
 		$this->SetFont('helvetica', 'I', 8);
 		// Page number
 		//$this->Cell(0, 10, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
-		$tDate=date('d/m/Y - H:i');
-		$this->Cell(0, 0, $tDate, false, 0, 'C', 0, '', 0, false, 'T', 'M');
+		//$tDate=date('d/m/Y - H:i');
+		$this->Cell(0, 0, $this->expDate, false, 0, 'C', 0, '', 0, false, 'T', 'M');
 		$this->Cell(0, 0, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, true, 'C', 0, '', 0, false, 'T', 'M');
 		
 	}

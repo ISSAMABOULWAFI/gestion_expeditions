@@ -6,10 +6,20 @@ class Export {
 		if ($results = Db::getInstance()->ExecuteS($sql))
 			return $results;
 	}
-	public static function getExportsWithNbrOrders(){
-		$sql = 'SELECT id_exp,date_exp,date_mail_amana,date_mail_client,(select count(*) from '._DB_PREFIX_.'my_exp_cmd_159357 where id_exp= m.id_exp) as nbr_orders, (select sum(nbr_colis) from '._DB_PREFIX_.'my_exp_cmd_159357 where id_exp= m.id_exp) as nbr_colis  
-				FROM '._DB_PREFIX_.'my_expeditions_159357 m  
-				order by date_exp desc';
+	
+	public static function getExportsWithNbrOrdersCount(){
+		$sql = 'SELECT count(id_exp) as countexp  '.
+				'FROM '._DB_PREFIX_.'my_expeditions_159357 m  '.
+				'order by date_exp desc ';
+		if ($results = Db::getInstance()->ExecuteS($sql))
+			return $results;
+	}
+	
+	public static function getExportsWithNbrOrders($count=3,$offset=0){
+		$sql = 'SELECT id_exp,date_exp,date_mail_amana,date_mail_client,(select count(*) from '._DB_PREFIX_.'my_exp_cmd_159357 where id_exp= m.id_exp) as nbr_orders, (select sum(nbr_colis) from '._DB_PREFIX_.'my_exp_cmd_159357 where id_exp= m.id_exp) as nbr_colis  '.
+				'FROM '._DB_PREFIX_.'my_expeditions_159357 m  '.
+				'order by date_exp desc '.
+				'LIMIT '.$count.' OFFSET '.$offset.'  ';
 		if ($results = Db::getInstance()->ExecuteS($sql))
 			return $results;
 	}

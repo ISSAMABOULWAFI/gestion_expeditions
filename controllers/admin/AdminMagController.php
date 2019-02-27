@@ -7,9 +7,18 @@ require_once dirname(__FILE__).'/../../models/MagasinModel.php';
 require_once dirname(__FILE__).'/../../models/CodeAmana.php';
 
 class AdminMagController extends AdminController{
+	
+	public $v1_7=false;
+	
 	public function __construct(){
 		$this->bootstrap = true;
-
+		
+		if(substr(_PS_VERSION_,0,3)=='1.7'){
+			
+			$this->v1_7=true;
+		}
+		
+		
 		
 		parent::__construct();
 		
@@ -172,6 +181,9 @@ class AdminMagController extends AdminController{
 		
 		
 		$list=Magasin::getListMagasin();
+		if($this->v1_7)
+			$list=Magasin::getListMagasin_1_7();
+		
 		$smarty->assign('listMagasin',$list);
 		
 		

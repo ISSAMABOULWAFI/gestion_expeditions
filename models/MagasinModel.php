@@ -4,6 +4,9 @@ class Magasin{
 	public static function getListMagasin(){
 		return Db::getInstance()->ExecuteS('select * from '._DB_PREFIX_.'store');
 	}
+	public static function getListMagasin_1_7(){
+		return Db::getInstance()->ExecuteS('select * from '._DB_PREFIX_.'store s ,'._DB_PREFIX_.'store_lang sl  where s.id_store=sl.id_store  ');
+	}
 	public static function getMagasin($id_store){
 		return Db::getInstance()->ExecuteS('select * from '._DB_PREFIX_.'store where id_store=\''.$id_store.'\'');
 	}

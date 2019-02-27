@@ -59,7 +59,7 @@ $(document).ready(function(){
 });
 </script>
 
-{IF $action=='main'}
+{If $action=='main'}
 <div class="panel">
   
     <div class="panel-heading"><i class="icon-cogs"></i> {l s='GESTION DES MAGASIN - CODES POSTAUX'}</div>
@@ -70,11 +70,11 @@ $(document).ready(function(){
 		<div class="form-group">
 		  <label for="sel1">{l s='Magasin :'}</label>
 		  <select class="form-control" name="id_mag" id="sel1">
-		  {IF $listMagasin}
+		  {If $listMagasin}
 			{FOREACH $listMagasin as $m}
-				<option value="{$m['id_store']}" {IF isset($smarty.get.id_mag) && $m['id_store']== $smarty.get.id_mag}selected{/IF}>{$m['name']} - {$m['address1']} {$m['city']}</option>
+				<option value="{$m['id_store']}" {If isset($smarty.get.id_mag) && $m['id_store']== $smarty.get.id_mag}selected{/If}>{$m['name']} - {$m['address1']} {$m['city']}</option>
 			{/FOREACH}
-		  {/IF}
+		  {/If}
 		  </select>
                   
 		</div>
@@ -85,8 +85,8 @@ $(document).ready(function(){
 				<span data-html="true" data-original-title="Séparez vos codes postaux avec des virgules comme suit: 75001,75002,<br><br>Vous pouvez utiliser tout type de format de codes postaux tant que ceux-ci sont séparés par des virgules." class="label-tooltip" data-toggle="tooltip" title="">pour les codes postaux suivants
 				</span>
 			</label>	 
-			<input type="hidden" name="id_cd_in" value="{IF $cdPList}{$cdPList[0]['id_cd']}{/IF}" />
-			<input type="text" name="cd_in" value="{IF $cdPList}{$cdPList[0]['from_']}{/IF}" data-role="tagsinput" />
+			<input type="hidden" name="id_cd_in" value="{If $cdPList}{$cdPList[0]['id_cd']}{/If}" />
+			<input type="text" name="cd_in" value="{If $cdPList}{$cdPList[0]['from_']}{/If}" data-role="tagsinput" />
 			
        </div>
 	   
@@ -95,8 +95,8 @@ $(document).ready(function(){
                         <span data-html="true" data-original-title="Séparez vos codes postaux avec des virgules comme suit: 750,750," class="label-tooltip" data-toggle="tooltip" title="">ou les codes postaux commençant par
                         </span>
                     </label>
-			<input type="hidden" name="id_cd_begin" value="{IF $cdPBegin}{$cdPBegin[0]['id_cd']}{/IF}" />					
-			<input type="text" name="cd_begin" value="{IF $cdPBegin}{$cdPBegin[0]['from_']}{/IF}" data-role="tagsinput" />           
+			<input type="hidden" name="id_cd_begin" value="{If $cdPBegin}{$cdPBegin[0]['id_cd']}{/If}" />					
+			<input type="text" name="cd_begin" value="{If $cdPBegin}{$cdPBegin[0]['from_']}{/If}" data-role="tagsinput" />           
        </div>
 	   <div class="form-group"> 
 			<label for="postcode_range_from_0" class="control-label col-lg-3">
@@ -104,7 +104,7 @@ $(document).ready(function(){
 				</span>
 			</label>
 		   <div class="postdeliv col-lg-9 myclass1">
-				{IF $cdPBetween}
+				{If $cdPBetween}
 					{FOREACH $cdPBetween as $row}
 						<div class="postal_range">
 							<input type="hidden" name="id_cd_bet[]" value="{$row['id_cd']}" />	
@@ -113,7 +113,7 @@ $(document).ready(function(){
 							<i class="icon-minus-sign"></i>
 						</div>
 					{/FOREACH}
-				{/IF}
+				{/If}
 				<div class="postal_range">
 					<input type="hidden" name="id_cd_bet[]" value="" />	
 					<input type="text" name="cd_bet_from[]" class="inline fixed-width-lg"> -  
@@ -129,7 +129,7 @@ $(document).ready(function(){
 				</span>
 			</label>
 		   <div class="form-check form-check-inline">
-			  <input class="form-check-input"  name="is_active" type="checkbox" id="inlineCheckbox1" {IF $is_active}checked{/IF}>
+			  <input class="form-check-input"  name="is_active" type="checkbox" id="inlineCheckbox1" {If $is_active}checked{/If}>
 			</div>
 		</div>
 		
@@ -139,7 +139,7 @@ $(document).ready(function(){
 				</span>
 			</label>
 		   <div class="form-check form-check-inline">
-			  <input class="form-check-input" name="is_default" type="checkbox" id="inlineCheckbox2" {IF $is_default}checked{/IF} {IF !$is_active}disabled{/IF}>
+			  <input class="form-check-input" name="is_default" type="checkbox" id="inlineCheckbox2" {If $is_default}checked{/If} {If !$is_active}disabled{/If}>
 			</div>
 		</div>
 		
@@ -162,7 +162,7 @@ $(document).ready(function(){
     <div class="panel-heading"><i class="icon-cogs"></i> {l s='LES TRANSPORTEURS CONCERNES'}</div>
   <form method="post">
   <div class="panel-body">
-		{IF isset($carriers)}
+		{If isset($carriers)}
 			
 			<pre>
 			{FOREACH $carriers as $c}
@@ -170,7 +170,7 @@ $(document).ready(function(){
 				<input type="checkbox" name="carrier[]" value="{$c['id_carrier']}" {($c['enabled']=='true')?'checked':''}/>{($c['name']=='0')?'DEFAULT':$c['name']}<br/>
 			{/FOREACH}
 			</pre>
-		{/IF}
+		{/If}
       
 	   
 		
@@ -189,7 +189,7 @@ $(document).ready(function(){
 
 <div class="panel">
   
-    <div class="panel-heading"><i class="icon-cogs"></i> {l s='GESTION DES ZONES SPECIFIQUES AMANA'}</div>
+    <div class="panel-heading"><i class="icon-cogs"></i> {l s='GESTION DES ZONES SPECIfIQUES AMANA'}</div>
   <form method="post">
   <div class="panel-body">
 		<div class="form-group">     
@@ -207,11 +207,11 @@ $(document).ready(function(){
 		<select id="zone_sel" name="zone_id">
 			
 		
-		{IF isset($zones)}
+		{If isset($zones)}
 			{FOREACH $zones as $zone1}
-				<option value="{$zone1['id']}" {IF isset($smarty.get.id_zone) && $zone1['id']== $smarty.get.id_zone}selected{/IF}>{$zone1['zone_name']}</option>
+				<option value="{$zone1['id']}" {If isset($smarty.get.id_zone) && $zone1['id']== $smarty.get.id_zone}selected{/If}>{$zone1['zone_name']}</option>
 			{/FOREACH}
-		{/IF}
+		{/If}
 		</select>
 		
 		<div class="form-group">     
@@ -229,7 +229,7 @@ $(document).ready(function(){
 			</label>
 			
 		   <div class="postdeliv col-lg-9 myclass2">
-				{IF $zoneBetween}
+				{If $zoneBetween}
 					{FOREACH $zoneBetween as $elem}
 						<div class="postal_range">
 							<input type="hidden" name="id_cd_bet[]" value="{$elem['id']}" />	
@@ -238,7 +238,7 @@ $(document).ready(function(){
 							<i class="icon-minus-sign"></i>
 						</div>
 					{/FOREACH}
-				{/IF}
+				{/If}
 				<div class="postal_range">
 					<input type="hidden" name="id_cd_bet[]" value="" />	
 					<input type="text" name="cd_bet_from[]" class="inline fixed-width-lg"> -  
@@ -321,8 +321,8 @@ $(document).ready(function(){
   
   </form>
 </div>
-{/IF}
+{/If}
 
-{IF $action=='validate'}
+{If $action=='validate'}
 
-{/IF}
+{/If}

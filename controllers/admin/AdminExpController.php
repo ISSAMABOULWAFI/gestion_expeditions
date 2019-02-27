@@ -18,6 +18,7 @@ require_once dirname(__FILE__).'/../../models/OrderModel.php';
 
 class AdminExpController extends AdminController{
 	
+	private $item_per_page = 5;
 	
 	public function __construct(){
 		$this->bootstrap = true;
@@ -94,13 +95,26 @@ class AdminExpController extends AdminController{
 		
 			
 		if(!isset($_GET['action'])){
-			//print_r(Export::getExportsWithNbrOrders());
-			//die();
-			$smarty->assign('exp', Export::getExportsWithNbrOrders());
+			/*echo "<pre>";
+			print_r(Export::getExportsWithNbrOrdersCount());
+			echo "</pre>";
+			die();*/
+			
+			$smarty->assign('base_url', _MODULE_DIR_.'gestion_expeditions/' );
 			$smarty->assign('action', "list");
 			$smarty->assign('newlink', $this->context->link->getAdminLink('AdminExp').'&action=new');
+			$smarty->assign('contr_link', $this->context->link->getAdminLink('AdminExp'));
+			
 			$linkdetail=$this->context->link->getAdminLink('AdminExp').'&action=detail&id_exp=';
 			$smarty->assign('linkdetail', $linkdetail);
+			$smarty->assign('item_per_page', $this->item_per_page);
+			
+			$count  =  Export::getExportsWithNbrOrdersCount();
+			if(isset($count[0]['countexp']) && $count[0]['countexp']>0){
+				$smarty->assign('countexp', $count[0]['countexp']);
+			}else{
+				$smarty->assign('countexp', '0');
+			}
 		
 		}
 		if(isset($_GET['action'])){
@@ -109,6 +123,53 @@ class AdminExpController extends AdminController{
 				$smarty->assign('carriers', explode(',', Configuration::get('carriers_159357')));				
 				$smarty->assign('orders', OrderModel::getOrders((int)Configuration::get('state1_159357')));				
 			}
+			
+			if($action=='getexports'){
+				$linkdetail=$this->context->link->getAdminLink('AdminExp').'&action=detail&id_exp=';
+				if(isset($_GET['offset']) && isset($_GET['limit'])){
+					
+					$_expeditions  =  Export::getExportsWithNbrOrders($_GET['limit'],$_GET['offset']);
+					
+					//print_r($_expeditions);
+					foreach($_expeditions as $expedition){
+						$s="";
+						$s.='<tr class="tr">';
+						$s.='<td class="text-center"><span class="badge badge-info">'.$expedition['id_exp'].'</span></td>';
+						$eeedate = new DateTime($expedition['date_exp']);
+						
+						$s.='<td class="text-center">'.$eeedate->format('d/m/Y H:i:s').'</td>';
+						If( $expedition['date_mail_amana']){
+							$s.='<td class="text-center"><span class="badge badge-success">OUI</span></td>';
+						}ELSE{
+							$s.='<td class="text-center"><span class="badge badge-danger">NON</span></td>';
+						}
+						$s.='<td class="text-center"><span class="badge badge-success">'.$expedition['nbr_orders'].'</span></td>';
+						$s.='<td class="text-center"><span class="badge badge-success">'.$expedition['nbr_colis'].'</span></td>';
+						$s.='<td class="text-right">';
+						$s.='<div class="btn-group-action">';
+						$s.='<div class="btn-group pull-center">';
+						$s.='<a class="edit btn btn-default" href="'.$linkdetail.$expedition['id_exp'].'"><i class="icon-search-plus">  </i> Afficher</a>';
+						$s.='</div></div></td></tr>';
+						
+						//$expedition['id_exp'];
+						echo $s;
+					}
+					
+					exit;
+				}else{
+					/*$count  =  Export::getExportsWithNbrOrdersCount();
+					if(isset($count[0]['countexp']) && $count[0]['countexp']>0){
+						
+						echo $count[0]['countexp'];
+					}else{
+						echo "0";
+					}*/
+					//echo "offset: ".$_GET['offset']." limit: ".$_GET['limit'];
+					
+					exit;
+				}
+			}
+			
 			if($action=='detail'){
 				$export=Export::getExport($_GET['id_exp']);
 				
@@ -146,6 +207,9 @@ class AdminExpController extends AdminController{
 				$objet=str_replace('#i',date('i',$exp_tmp_date),$objet);
 				$objet=str_replace('#s',date('s',$exp_tmp_date),$objet);
 				
+				$objet=str_replace('#nexp',$export[0]['id_exp'],$objet);
+				
+				
 				$smarty->assign('objet',$objet);
 				//$smarty->assign('volum',);
 				//$smarty->assign('encombr',Export::getOrdersEncombr($_GET['id_exp']));
@@ -168,6 +232,10 @@ class AdminExpController extends AdminController{
 				$message=str_replace('#H',date('H',$exp_tmp_date),$message);
 				$message=str_replace('#i',date('i',$exp_tmp_date),$message);
 				$message=str_replace('#s',date('s',$exp_tmp_date),$message);
+				
+				$message=str_replace('#nexp',$export[0]['id_exp'],$message);
+				
+				
 				
 				
 				if($volum){

@@ -8,6 +8,24 @@ require_once dirname(__FILE__).'/models/MagasinModel.php';
 class gestion_expeditions extends Module
 {
 	
+	public $all_tabs = array(
+		array(
+	        'class_name' => 'AdminExp',
+	        'id_parent' => 'parent',
+	        'name' => 'Gestion des expéditions',
+		),
+		array(
+	        'class_name' => 'AdminMag',
+	        'id_parent' => 'parent',
+	        'name' => 'Gestion des magasins/codes postaux',
+		),
+		array(
+	        'class_name' => 'AdminGenerationDocs',
+	        'id_parent' => 'parent',
+	        'name' => 'Docs',
+		),
+	);
+	
 	//Definition des menus 
 	protected $tabs = [
         [
@@ -40,7 +58,7 @@ class gestion_expeditions extends Module
 	public function __construct(){
 		$this->name=$this->l('gestion_expeditions');
 		$this->displayName=$this->l('Gestion des expéditions');
-		$this->version='1.0.1';
+		$this->version='1.0.2';
 		$this->description=$this->l('Module pour la gestion des expéditions Amana');
 		$this->ps_versions_compliancy=['min'=>'1.6','max'=>_PS_VERSION_];
 		$this->author='ERRAMY NOUREDDINE';
@@ -468,7 +486,15 @@ class gestion_expeditions extends Module
 		Configuration::updateValue('amana_mail_message_159357', $m);
 		
 		
-		$this->addTab($this->tabs);
+		$vrs=substr(_PS_VERSION_,0,3);
+		if($vrs=='1.7'){
+			$this->Register_Tabs() ;
+		}else{
+			
+			$this->addTab($this->tabs);
+		}
+		
+		
 		
 		
 		
@@ -482,7 +508,14 @@ class gestion_expeditions extends Module
 			return false;
 
 		
-        $this->removeTab($this->tabs);
+		$vrs=substr(_PS_VERSION_,0,3);
+		if($vrs=='1.7'){
+			$this->UnRegister_Tabs();
+		}else{
+			$this->removeTab($this->tabs);
+		}
+		
+        
 		
 		
 		
@@ -576,4 +609,63 @@ class gestion_expeditions extends Module
 		}
     }
 	
+	public function Register_Tabs()
+	{
+		$tabs_lists = array();
+        $langs = Language::getLanguages();
+        $id_lang = (int)Configuration::get('PS_LANG_DEFAULT');
+        $save_tab_id = $this->Register_ETabs();
+    	if(isset($this->all_tabs) && !empty($this->all_tabs)){
+    		foreach ($this->all_tabs as $tab_list)
+    		{
+    		    $tab_listobj = new Tab();
+    		    $tab_listobj->class_name = $tab_list['class_name'];
+    		    $tab_listobj->id_parent = $save_tab_id;
+    		    if(isset($tab_list['module']) && !empty($tab_list['module'])){
+    		    	$tab_listobj->module = $tab_list['module'];
+    		    }else{
+    		    	$tab_listobj->module = $this->name;
+    		    }
+    		    foreach($langs as $l)
+    		    {
+    		    	$tab_listobj->name[$l['id_lang']] = $this->l($tab_list['name']);
+    		    }
+    		    $tab_listobj->save();
+    		}
+    	}
+        return true;
+    }
+	public function Register_ETabs(){
+		$tabpar_listobj = new Tab();
+		$langs = Language::getLanguages();
+		$id_parent = (int)Tab::getIdFromClassName("IMPROVE");
+		$tabpar_listobj->class_name = 'AdminExpedition';
+		$tabpar_listobj->id_parent = $id_parent;
+		$tabpar_listobj->module = $this->name;
+		foreach($langs as $l)
+	    {
+	    	$tabpar_listobj->name[$l['id_lang']] = "Étiquettes";
+	    }
+	    if($tabpar_listobj->save()){
+	    	return (int)$tabpar_listobj->id;
+	    }else{
+	    	return (int)$id_parent;
+	    }
+	}
+	public function UnRegister_Tabs()
+	{
+		if(isset($this->all_tabs) && !empty($this->all_tabs)){
+			foreach($this->all_tabs as $tab_list){
+				$tab_list_id = Tab::getIdFromClassName($tab_list['class_name']);
+			    if(isset($tab_list_id) && !empty($tab_list_id)){
+			        $tabobj = new Tab($tab_list_id);
+			        $tabobj->delete();
+			    }
+			}
+		}
+		$tabp_list_id = Tab::getIdFromClassName('AdminExpedition');
+		$tabpobj = new Tab($tabp_list_id);
+	    $tabpobj->delete();
+        return true;
+	}
 }

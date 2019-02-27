@@ -30,8 +30,16 @@
 
 </style>
 
-{IF $action=="list"}
-
+{If $action=="list"}
+	<script>
+	var contr_link = "{$contr_link}",
+		loadingdiv="#loadingdiv",
+		item_per_page="{$item_per_page}",
+		countexp="{$countexp}";
+	$(document).ready(function(){
+		init();
+	});
+	</script>
 	<div class="panel">
 		<div class="panel-heading">
 			{l s='Liste des expéditions'}
@@ -39,9 +47,11 @@
 
 
 	<div class="panel-body">
-	{IF $exp}
-	
-		<table id="main1" class="table js-dynamitable  js-dynamitablejs-dynamitablejs-dynamitable "  style="background-color:#F1F1F1;width:100%;">
+		<div id="loadingdiv" style="height:200px;width:100%;display: none; flex-direction: column; justify-content: center; align-items: center;">
+			<img src="{$base_url}images/loading.gif" />
+		</div>
+		<div id="noexport" style="display:none;width:100%;height:200px;flex-direction: column; justify-content: center; align-items: center;color:gray;font-size:20px;">{l s='Aucune expédition trouvée!'}</div>
+		<table id="main1" class="table js-dynamitable  js-dynamitablejs-dynamitablejs-dynamitable "  style="display:none;background-color:#F1F1F1;width:100%;">
 			<thead>
 			  <tr>
 				<th  class="text-center" style="width:120px;"><b>{l s='ID'}</b><span class="js-sorter-desc     glyphicon glyphicon-chevron-down pull-right"></span> <span class="js-sorter-asc     glyphicon glyphicon-chevron-up pull-right"></span> </th>
@@ -77,36 +87,11 @@
 				</tr>
 			</thead>
 			<tbody id="tbody">
-			{foreach from=$exp item=foo}
-			  <tr class="tr">
-				<td class="text-center"><span class="badge badge-info">{$foo['id_exp']}</span></td>
-				<td class="text-center">{$foo['date_exp']|date_format:"%e/%m/%Y %H:%M"}</td>
-				{IF $foo['date_mail_amana']}
-					<td class="text-center"><span class="badge badge-success">OUI</span></td>
-				{ELSE}
-					<td class="text-center"><span class="badge badge-danger">NON</span></td>
-				{/IF}
-				
-				
-				<td class="text-center"><span class="badge badge-success">{$foo['nbr_orders']}</span></td>
-				<td class="text-center"><span class="badge badge-success">{$foo['nbr_colis']}</span></td>
-				
-				<td class="text-right">
-					<div class="btn-group-action">
-						<div class="btn-group pull-center">
-							<a class="edit btn btn-default" href="{$linkdetail}{$foo['id_exp']}"><i class="icon-search-plus">  </i> Afficher</a>
-						</div>
-					</div>
-				</td>
-			  </tr>
-			{/foreach}
+			
 			</tbody>
 		</table>
 		<div id="paging" style="text-align:center;"></div>
-	{ELSE}
-	
-		<div style="width:100%;height:50px;text-align:center;color:gray;font-size:20px;">{l s='Aucune expédition trouvée!'}</div>
-	{/IF}
+		
 	</div>
 	<div class="panel-footer clearfix">
 			<div class="pull-right">
@@ -115,8 +100,8 @@
 	</div>
 	
 </div>
-{/IF}
-{IF $action=="detail"}
+{/If}
+{If $action=="detail"}
 	<div class="panel">
 		<div class="panel-heading ">
 			{l s='Détails'}
@@ -124,11 +109,11 @@
 		</div>
 		<div class="panel-body">
 			<div >
-			{IF isset($export)}
+			{If isset($export)}
 			{l s='Expédition'}  N <b>{$export[0]['id_exp']} - {$export[0]['date_exp']|date_format:"%e/%m/%Y %H:%M"} | NOMBRE DES COMMANDES : <span class="badge">{$export[0]['nbr_orders']}</span>| NOMBRE DES COLIS : <span class="badge">{$export[0]['nbr_colis']}</span> </b>
 			{ELSE}
 			NAN
-			{/IF}
+			{/If}
 			</div>
 			<br/><br/>
 			<table class="table js-dynamitable  js-dynamitablejs-dynamitablejs-dynamitable " style="background-color:#F1F1F1;width:100%;">
@@ -181,7 +166,7 @@
 				
 				<td class="text-center">{$foo['date_add']|date_format:"%e/%m/%Y %H:%M"}</td>
 				<td class="text-center">{$foo['payment']}</td>
-				<td class="text-center">{IF $foo['is_valid']==0}{l s='ANNULEE'}{ELSE}{l s='ACTIVE'}{/IF}</td>
+				<td class="text-center">{If $foo['is_valid']==0}{l s='ANNULEE'}{ELSE}{l s='ACTIVE'}{/If}</td>
 				
 			  </tr>
 			{/foreach}
@@ -195,13 +180,13 @@
 			<!--<div class="pull-right spaced">
 			  <a href="{$pdflink}" target="_blank" class="btn btn-default">{l s='BORDEREAU'}</a>
 			</div>-->
-			<button type="button" class="pull-right spaced btn btn-default {IF $nbrtickets==0}disabled{/IF}" data-toggle="modal" data-target="#exampleModalLong">
+			<button type="button" class="pull-right spaced btn btn-default {If $nbrtickets==0}disabled{/If}" data-toggle="modal" data-target="#exampleModalLong">
 			  {l s='BORDEREAU'}
 			</button>
 			<div class="pull-right spaced ">
-			  <a {IF $nbrtickets>0}target="_blank" href="{$ticketlink}" class="btn btn-default"{/IF} {IF $nbrtickets==0} class="btn empty btn-default disabled"{/IF} >{l s='ETIQUETTES'}</a>
+			  <a {If $nbrtickets>0}target="_blank" href="{$ticketlink}" class="btn btn-default"{/If} {If $nbrtickets==0} class="btn empty btn-default disabled"{/If} >{l s='ETIQUETTES'}</a>
 			</div>
-			<button type="button" class="pull-right spaced btn btn-default {IF $nbrtickets==0}disabled{/IF}" data-toggle="modal" data-target="#importEnMassePopUp">
+			<button type="button" class="pull-right spaced btn btn-default {If $nbrtickets==0}disabled{/If}" data-toggle="modal" data-target="#importEnMassePopUp">
 			  {l s='IMPORT EN MASSE'}
 			</button>
 			<!--
@@ -209,7 +194,7 @@
 			  <a id="mailboxbtn2" href="#" class="btn btn-default">{l s='MAILS CLIENTS'}</a>
 			</div>-->
 			<div class="pull-right spaced">
-			  <a id="mailboxbtn" href="#" class="btn btn-default {IF $nbrtickets==0}disabled{/IF}">{l s='MAIL AMANA'}</a>
+			  <a id="mailboxbtn" href="#" class="btn btn-default {If $nbrtickets==0}disabled{/If}">{l s='MAIL AMANA'}</a>
 			</div>
 		</div>
 	</div>
@@ -223,8 +208,8 @@
 			<form id="mailform"  method="post" action="{$maillink}" novalidate>
 			  <div class="form-group">
 				<label for="exampleInputEmail1">À</label>
-				<input type="email" name="mails" class="form-control multiplemails" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" value='[{IF Configuration::get("amana_mails_159357")}{Configuration::get("amana_mails_159357")}{/IF}
-				{IF Configuration::get("amana_mails_cc_159357")},{Configuration::get("amana_mails_cc_159357")}{/IF}]'>
+				<input type="email" name="mails" class="form-control multiplemails" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" value='[{If Configuration::get("amana_mails_159357")}{Configuration::get("amana_mails_159357")}{/If}
+				{If Configuration::get("amana_mails_cc_159357")},{Configuration::get("amana_mails_cc_159357")}{/If}]'>
 				<!--<small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>-->
 			  </div>
 			  <input type="hidden" name="id_exp" value="{$export[0]['id_exp']}" />
@@ -242,7 +227,7 @@
 			  </div>
 			  <div id="attachments">
 				{$n=$num}
-				{IF $defaultzone>0}
+				{If $defaultzone>0}
 					<input type="hidden" name="impor[0][]" value="{$imporname|replace:'#n':($n+1)}.xls" />
 					<input type="hidden" name="impor[1][]" value="-1" />
 					<p><input type="checkbox" name="impor[2][]" value="{$xlslink}" checked />{$imporname|replace:'#n':($n+1)}.xls</p>
@@ -250,10 +235,10 @@
 					<input type="hidden" name="bord[0][]" value="{$bordname|replace:'#n':($n+1)}.pdf" />
 					<input type="hidden" name="bord[1][]" value="-1" />
 					<p><input type="checkbox" name="bord[2][]" value="{$pdflink}" checked />{$bordname|replace:'#n':($n+1)}.pdf</p>
-				{/IF}
+				{/If}
 				{$n=$n+1}
 				{foreach $zonesList as $z}
-					{IF $z['nbr']>0}
+					{If $z['nbr']>0}
 						<input type="hidden" name="impor[0][]" value="{$imporname|replace:'#n':($n+1)}.xls" />
 						<input type="hidden" name="impor[1][]" value="{$z['id']}" />
 						<p><input type="checkbox" name="impor[2][]" value="{$xlslink}" checked />{$imporname|replace:'#n':($n+1)}.xls</p>
@@ -261,7 +246,7 @@
 						<input type="hidden" name="bord[0][]" value="{$bordname|replace:'#n':($n+1)}.pdf" />
 						<input type="hidden" name="bord[1][]" value="{$z['id']}" />
 						<p><input type="checkbox" name="bord[2][]" value="{$pdflink}" checked />{$bordname|replace:'#n':($n+1)}.pdf</p>
-					{/IF}
+					{/If}
 					{$n=$n+1}
 				{/foreach}
 			  </div>
@@ -287,10 +272,10 @@
       </div>
       <div class="modal-body">
 		
-		<!--<h3><a {IF $defaultzone>0}target="_blank" href="{$pdflink}&zone_id=-1"{/IF} {IF $defaultzone==0}class="empty"{/IF}>Commandes des autres villes</a><br/></h3>-->
+		<!--<h3><a {If $defaultzone>0}target="_blank" href="{$pdflink}&zone_id=-1"{/If} {If $defaultzone==0}class="empty"{/If}>Commandes des autres villes</a><br/></h3>-->
 		
         {foreach $zonesList as $z}
-			<h3><a {IF $z['nbr']>0}target="_blank" href="{$pdflink}&zone_id={$z['id']}"{/IF} {IF $z['nbr']==0}class="empty"{/IF}>{$z['zone_name']}</a><br/></h3>
+			<h3><a {If $z['nbr']>0}target="_blank" href="{$pdflink}&zone_id={$z['id']}"{/If} {If $z['nbr']==0}class="empty"{/If}>{$z['zone_name']}</a><br/></h3>
 		{/foreach}
       </div>
       
@@ -309,22 +294,22 @@
       </div>
       <div class="modal-body">
 		
-		<!--<h3><a {IF $defaultzone>0}target="_blank" href="{$pdflink}&zone_id=-1"{/IF} {IF $defaultzone==0}class="empty"{/IF}>Commandes des autres villes</a><br/></h3>-->
+		<!--<h3><a {If $defaultzone>0}target="_blank" href="{$pdflink}&zone_id=-1"{/If} {If $defaultzone==0}class="empty"{/If}>Commandes des autres villes</a><br/></h3>-->
 		
         {foreach $zonesList as $z}
-			<h3><a {IF $z['nbr']>0}target="_blank" href="{$xlslink}&zone_id={$z['id']}"{/IF} {IF $z['nbr']==0}class="empty"{/IF}>{$z['zone_name']}</a><br/></h3>
+			<h3><a {If $z['nbr']>0}target="_blank" href="{$xlslink}&zone_id={$z['id']}"{/If} {If $z['nbr']==0}class="empty"{/If}>{$z['zone_name']}</a><br/></h3>
 		{/foreach}
       </div>
       
     </div>
   </div>
 </div>
-{/IF}
+{/If}
 
 
 
 
-{IF $action=="new"}
+{If $action=="new"}
 <script language="Javascript">
 var orders_selected=0;
 $(document).ready(function(){
@@ -371,11 +356,11 @@ function refreshSelected(){
 		</div>
 		{$i=0}
 		{foreach from=$orders item=foo}
-			{IF in_array($foo['id_carrier'], $carriers)}
+			{If in_array($foo['id_carrier'], $carriers)}
 				{assign var=i value=$i+1}
-			{/IF}
+			{/If}
 		{/foreach}
-		{IF $orders and $i>0}
+		{If $orders and $i>0}
 		<form method="post" id="form11">
 		<div class="panel-body">
 			
@@ -393,7 +378,7 @@ function refreshSelected(){
 			</thead>
 			<tbody>
 			{foreach from=$orders item=foo}
-				{IF in_array($foo['id_carrier'], $carriers)}
+				{If in_array($foo['id_carrier'], $carriers)}
 				  <tr>
 					<td> <input class="mycheckbox" type="checkbox" checked="checked"></td>
 					<td>{$foo['id_order']}</td>
@@ -405,7 +390,7 @@ function refreshSelected(){
 					<td><input style="text-align:right;width:40px;" type="number" class="stepperpositif" name="nbr_colis[]" step="1" value='1'></td>
 					
 				  </tr>
-				  {/IF}
+				  {/If}
 			{/foreach}
 			  </tbody>
 			</table>
@@ -433,9 +418,9 @@ function refreshSelected(){
 				<a href="{$finishLink}" class="btn btn-default">{l s='Retour'}</a>
 			</div>
 		</div>
-		{/IF}
+		{/If}
 	</div>
-{/IF}
+{/If}
 
 
 
